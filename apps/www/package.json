@@ -1,0 +1,27 @@
+{
+  "name": "WWW-StackArif",
+  "type": "module",
+  "version": "1.0.1",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "packageManager": "pnpm@11.24.0",
+  "dependencies": {
+    "@astrojs/rss": "^4.0.19",
+    "@fontsource-variable/montserrat": "^5.0.19",
+    "astro": "^7.2.7"
+  },
+  "description": "Stack Arif projects to showcase our Turborepo all links",
+  "main": "index.astro",
+  "keywords": [
+    "StackArif",
+    "Turborepo",
+    "devarifhossain"
+  ],
+  "author": "devarifhossain",
+  "license": "MIT"
+}

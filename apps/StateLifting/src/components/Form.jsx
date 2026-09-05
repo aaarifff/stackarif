@@ -16,10 +16,11 @@ const Form = ({ getData }) => {
     });
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = () => {
     event.preventDefault();
     console.log(values);
     getData(values);
+    console.log("arif");
   };
   return (
     <div>
