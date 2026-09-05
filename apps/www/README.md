@@ -3,7 +3,7 @@
 [![Version](https://img.shields.io/badge/version-0.0.1-blue.svg)](https://github.com/tu_usuario/tu_repositorio)
 [![License](https://img.shields.io/badge/license-MIT-green.svg)](https://opensource.org/licenses/MIT)
 
-![Portada](/public/img/portada.png)
+![Portada](https://github.com/aaarifff/stackarif/blob/main/apps/www/public/img/portada.png)
 
 #### Description
 
