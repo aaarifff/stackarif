@@ -1,0 +1,45 @@
+[
+  {
+    "name": "All Portfolio Links",
+    "slug": "Portfolio-links",
+    "description": "These All Are my Portfoloio Links that make me a dread javascript Developer",
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-folder-git-2\"><path d=\"M18 19a5 5 0 0 1-5-5v8\"/><path d=\"M9 20H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H20a2 2 0 0 1 2 2v5\"/><circle cx=\"13\" cy=\"12\" r=\"2\"/><circle cx=\"20\" cy=\"19\" r=\"2\"/></svg>",
+    "order": 1
+  },
+  {
+    "name": "React Project",
+    "slug": "react-project",
+    "description": "Places worth an evening ok",
+    "icon": "<svg viewBox=\"0 0 24 24\" aria-hidden=\"true\"><path d=\"M12 2 2 7l10 5 10-5-10-5Zm0 12L4 10v5l8 5 8-5v-5l-8 4Z\"/></svg>",
+    "order": 2
+  },
+  {
+    "name": "Client Project",
+    "slug": "client-project",
+    "description": "Places worth an evening",
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-boom-box\"><path d=\"M4 9V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4\"/><path d=\"M8 8v1\"/><path d=\"M12 8v1\"/><path d=\"M16 8v1\"/><rect width=\"20\" height=\"12\" x=\"2\" y=\"9\" rx=\"2\"/><circle cx=\"8\" cy=\"15\" r=\"2\"/><circle cx=\"16\" cy=\"15\" r=\"2\"/></svg>",
+    "order": 3
+  },
+  {
+    "name": "Client Projects",
+    "slug": "client-projects",
+    "description": "Places worth an evening",
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-boom-box\"><path d=\"M4 9V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4\"/><path d=\"M8 8v1\"/><path d=\"M12 8v1\"/><path d=\"M16 8v1\"/><rect width=\"20\" height=\"12\" x=\"2\" y=\"9\" rx=\"2\"/><circle cx=\"8\" cy=\"15\" r=\"2\"/><circle cx=\"16\" cy=\"15\" r=\"2\"/></svg>",
+    "order": 4
+  },
+  {
+    "name": "Open Source",
+    "slug": "open-source",
+    "description": "Places worth an evening",
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-boom-box\"><path d=\"M4 9V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4\"/><path d=\"M8 8v1\"/><path d=\"M12 8v1\"/><path d=\"M16 8v1\"/><rect width=\"20\" height=\"12\" x=\"2\" y=\"9\" rx=\"2\"/><circle cx=\"8\" cy=\"15\" r=\"2\"/><circle cx=\"16\" cy=\"15\" r=\"2\"/></svg>",
+    "order": 5
+  },
+
+  {
+    "name": "My Top Project",
+    "slug": "my-top-project",
+    "description": "Places worth an evening",
+    "icon": "<svg width=\"24\" height=\"24\" viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"2\" stroke-linecap=\"round\" stroke-linejoin=\"round\" class=\"lucide lucide-boom-box\"><path d=\"M4 9V5a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v4\"/><path d=\"M8 8v1\"/><path d=\"M12 8v1\"/><path d=\"M16 8v1\"/><rect width=\"20\" height=\"12\" x=\"2\" y=\"9\" rx=\"2\"/><circle cx=\"8\" cy=\"15\" r=\"2\"/><circle cx=\"16\" cy=\"15\" r=\"2\"/></svg>",
+    "order": 6
+  }
+]

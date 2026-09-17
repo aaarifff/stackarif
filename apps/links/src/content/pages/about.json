@@ -1,0 +1,7 @@
+{
+  "title": "About",
+  "slug": "about",
+  "order": 0,
+  "inFooter": true,
+  "body": "<p>Make your Own Directory Site on your Single Codebase using Turbo Repo or nx</p>"
+}

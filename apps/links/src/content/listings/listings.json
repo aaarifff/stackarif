@@ -1,0 +1,133 @@
+[
+  {
+    "category": "Portfolio-links",
+    "listings": [
+      {
+        "name": "Example One",
+        "slug": "example-one",
+        "url": "https://example.com",
+        "description": "A placeholder listing. Replace these with your own before publishing.",
+        "rating": 9.1,
+        "featured": true,
+        "favicon": ""
+      },
+      {
+        "name": "Example Two",
+        "slug": "example-two-list1",
+        "url": "https://example.org",
+        "description": "A second listing stored in the same JSON file.",
+        "rating": 8.4,
+        "featured": false,
+        "favicon": ""
+      }
+    ]
+  },
+  {
+    "category": "react-project",
+    "listings": [
+      {
+        "name": "Example Two",
+        "slug": "example-two",
+        "url": "https://example.net",
+        "description": "A placeholder listing for list 2.",
+        "rating": 8.4,
+        "featured": false,
+        "favicon": ""
+      }
+    ]
+  },
+  {
+    "category": "client-project",
+    "listings": [
+      {
+        "name": "Example Three",
+        "slug": "example-three",
+        "url": "https://example.org",
+        "description": "A placeholder listing for list 3.",
+        "rating": null,
+        "featured": false,
+        "favicon": ""
+      },
+      {
+        "name": "Example Four",
+        "slug": "example-four",
+        "url": "https://example.org",
+        "description": "A placeholder listing for list 3.",
+        "rating": null,
+        "featured": false,
+        "favicon": ""
+      }
+    ]
+  },
+  {
+    "category": "client-projects",
+    "listings": [
+      {
+        "name": "Example Three",
+        "slug": "example-threes",
+        "url": "https://example.org",
+        "description": "A placeholder listing for list 3.",
+        "rating": null,
+        "featured": false,
+        "favicon": ""
+      },
+      {
+        "name": "Example Four",
+        "slug": "example-fours",
+        "url": "https://example.org",
+        "description": "A placeholder listing for list 3.",
+        "rating": null,
+        "featured": false,
+        "favicon": ""
+      }
+    ]
+  },
+  {
+    "category": "open-source",
+    "listings": [
+      {
+        "name": "My Open Source Project",
+        "slug": "my-open-source-project",
+        "url": "https://github.com/example/project",
+        "description": "An open source project.",
+        "rating": 9,
+        "featured": true,
+        "favicon": ""
+      },
+
+      {
+        "name": "Example Four",
+        "slug": "example-fours",
+        "url": "https://example.org",
+        "description": "A placeholder listing for list 3.",
+        "rating": null,
+        "featured": false,
+        "favicon": ""
+      }
+    ]
+  },
+  {
+    "category": "my-top-project",
+    "listings": [
+      {
+        "name": "My Open Source Project",
+        "slug": "my top project",
+        "url": "https://github.com/example/project",
+        "description": "An open source project.",
+        "rating": 9,
+        "featured": true,
+        "favicon": ""
+      },
+
+      {
+        "name": "Example Four",
+        "slug": "example-top",
+        "url": "https://example.org",
+        "description": "A placeholder listing for list 3.",
+        "rating": null,
+        "featured": false,
+        "favicon": ""
+      }
+    ]
+  }
+]
