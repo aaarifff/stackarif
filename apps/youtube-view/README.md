@@ -11,17 +11,17 @@ and preferences in `localStorage`.
 ## Getting started
 
 ```bash
-npm install
-npm run dev      # http://localhost:3000
+pnpm install
+pnpm run dev     # http://localhost:3002
 ```
 
 Other scripts:
 
 ```bash
-npm run typecheck   # tsc --noEmit
-npm test            # vitest unit tests
-npm run build       # production build
-npm run lint        # next lint
+pnpm run typecheck  # tsc --noEmit
+pnpm test           # vitest unit tests
+pnpm run build      # production build
+pnpm run lint       # next lint
 ```
 
 ## How it works
