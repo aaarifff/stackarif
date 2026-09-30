@@ -1,0 +1,188 @@
+@import "tailwindcss";
+
+/* Class-based dark mode (the inline script in the root layout sets `.dark`
+   before first paint, so there is no flash of the wrong theme). */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ---------------------------------------------------------------------------
+   Design tokens
+   Palette lifted from the Plasma (shadcn/ui) reference template, with the
+   destructive/ring/brand values contrast-tuned so body text, buttons and focus
+   rings stay readable in both modes.
+   --------------------------------------------------------------------------- */
+
+:root {
+  --background: oklch(87% 0.02 320);
+  --foreground: oklch(5% 0.02 290);
+  --card: oklch(95% 0.01 320);
+  --card-foreground: oklch(5% 0.02 290);
+  --popover: oklch(95% 0.01 320);
+  --popover-foreground: oklch(5% 0.02 290);
+  --primary: oklch(5% 0.02 290);
+  --primary-foreground: oklch(100% 0 0);
+  --secondary: oklch(62% 0.18 280);
+  --secondary-foreground: oklch(5% 0.02 290);
+  --muted: oklch(15% 0.03 50 / 0.08);
+  --muted-foreground: oklch(35% 0.03 50);
+  --accent: oklch(96% 0.01 320);
+  --accent-foreground: oklch(8% 0.02 290);
+  --border: oklch(84% 0.01 240);
+  --input: oklch(75% 0.02 50);
+
+  /* Accessible overrides of Plasma's near-invisible ring + light red. */
+  --ring: oklch(5% 0.02 290);
+  --destructive: oklch(51% 0.2 27);
+  --danger: oklch(48% 0.2 27);
+  --warning: oklch(46% 0.11 70);
+  --warning-muted: oklch(96% 0.04 90);
+  --success: oklch(45% 0.1 155);
+  --success-muted: oklch(95% 0.04 155);
+
+  /* Violet accent carried over from the app's original indigo. */
+  --brand: oklch(48% 0.2 285);
+  --brand-muted: oklch(93% 0.035 300);
+
+  --elevation-card: 0 1px 2px oklch(5% 0.02 290 / 0.05), 0 24px 60px oklch(5% 0.02 290 / 0.08);
+
+  --radius: 0.625rem;
+  color-scheme: light;
+}
+
+.dark {
+  /* Plasma's own dark surface (#07070e) as the page, with cards one step up so
+     surfaces stay distinguishable — see the note on --border below. */
+  --background: oklch(13% 0.012 290);
+  --foreground: oklch(100% 0 0);
+  --card: oklch(19% 0.012 290);
+  --card-foreground: oklch(100% 0 0);
+  --popover: oklch(19% 0.012 290);
+  --popover-foreground: oklch(100% 0 0);
+  --primary: oklch(100% 0 0);
+  --primary-foreground: oklch(8% 0.02 290);
+  --secondary: oklch(52% 0.16 280);
+  --secondary-foreground: oklch(100% 0 0);
+  --muted: oklch(93% 0.02 240 / 0.07);
+  --muted-foreground: oklch(73% 0.01 240);
+  --accent: oklch(24% 0.012 290);
+  --accent-foreground: oklch(94% 0.01 240);
+  --border: oklch(28% 0.01 240);
+  --input: oklch(32% 0.01 240);
+
+  --ring: oklch(80% 0.02 240);
+  --destructive: oklch(58% 0.22 25);
+  --danger: oklch(76% 0.15 25);
+  --warning: oklch(78% 0.13 80);
+  --warning-muted: oklch(24% 0.05 75);
+  --success: oklch(74% 0.14 155);
+  --success-muted: oklch(24% 0.05 155);
+
+  --brand: oklch(76% 0.15 285);
+  --brand-muted: oklch(24% 0.055 290);
+
+  --elevation-card: 0 1px 2px oklch(0% 0 0 / 0.6), 0 24px 60px oklch(0% 0 0 / 0.5);
+
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-brand: var(--brand);
+  --color-brand-muted: var(--brand-muted);
+  --color-danger: var(--danger);
+  --color-warning: var(--warning);
+  --color-warning-muted: var(--warning-muted);
+  --color-success: var(--success);
+  --color-success-muted: var(--success-muted);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif, "Apple Color Emoji",
+    "Segoe UI Emoji";
+
+  /* Plasma uses a 0.625rem base radius; scale the rounded-* presets from it. */
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 0.25rem);
+  --radius-2xl: calc(var(--radius) + 0.5rem);
+
+  --shadow-card: var(--elevation-card);
+}
+
+@layer base {
+  html,
+  body {
+    height: 100%;
+  }
+
+  body {
+    background-color: var(--background);
+    color: var(--foreground);
+    font-family: var(--font-sans);
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Visible keyboard focus everywhere, without adding outlines to the controls
+     that already style their own focus state (those live in the utilities
+     layer, which wins over this one). */
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  /* Theme changes cross-fade instead of snapping. Kept inside @layer base so
+     Tailwind's transition-* utilities still win where a component asks for
+     something more specific. */
+  @media (prefers-reduced-motion: no-preference) {
+    *,
+    *::before,
+    *::after {
+      transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+      transition-duration: 200ms;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklab, var(--foreground) 25%, transparent) transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: color-mix(in oklab, var(--foreground) 25%, transparent);
+  border-radius: 9999px;
+}
+
+.safe-bottom {
+  padding-bottom: env(safe-area-inset-bottom);
+}

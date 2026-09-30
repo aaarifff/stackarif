@@ -1,0 +1,160 @@
+# PRD: TypeChamp
+
+**A minimalist typing speed test web application**
+
+**Version:** 1.0 
+**Reference inspiration:** monkeytype.com (design & mechanics reference only — not a clone)
+
+---
+
+## 1. Product Summary
+
+**TypeChamp** is a fast, distraction-free, keyboard-first typing speed test. Users type streamed words in real time, get live WPM feedback, and land on a detailed results page after each test. The app supports **duration-based tests**, **word-count-based tests**, and a **theme system** (starting with a dark and a light green theme), all wrapped in a clean, minimal, no-clutter UI.
+
+This is intentionally a **lean build** — a small, polished feature set rather than a full Monkeytype clone.
+
+---
+
+## 2. Goals
+
+- Build a working, satisfying typing test core loop: **configure → type → see live stats → view results**
+- Support **Time mode** (duration-based: 15 / 30 / 60 / 120 seconds) as a primary mode
+- Support **Words mode** (10 / 25 / 50 / 100 words) as a secondary mode
+- Support a **theme switcher** with at least two themes: a dark green theme (default) and a light green theme
+- Provide a **results page** showing WPM, accuracy, time, and basic performance breakdown
+- Keep everything usable without login/signup — guest-first, no backend required for v1
+
+## 3. Non-Goals (explicitly out of scope for v1)
+
+- No user accounts, login, or authentication
+- No cloud sync / saved history / leaderboards
+- No multiplayer or race mode
+- No multiple languages (English only)
+- No custom text upload, quote mode, or zen mode (future consideration only)
+- No mobile app — responsive web only
+- No large theme catalog — just 2 themes at launch, built in a way that more can be added later
+
+---
+
+## 4. Target User
+
+Anyone who wants a quick, clean way to test and track their typing speed casually — students, professionals, keyboard enthusiasts — without needing to sign up or navigate a complex settings menu.
+
+---
+
+## 5. Core User Flow
+
+1. User lands on the homepage — a typing test is ready by default (Time mode, 30 seconds, no punctuation/numbers, dark theme).
+2. User optionally adjusts settings before starting: toggle punctuation, toggle numbers, switch between Time/Words mode, pick a duration or word count.
+3. User starts typing directly into the word area — the test begins automatically on the first keystroke.
+4. While typing: live timer or word progress is shown, along with a live WPM counter. Each character is visually marked correct/incorrect as typed. The caret moves and the text smoothly scrolls forward.
+5. Test ends automatically when time runs out (Time mode) or all words are completed (Words mode).
+6. Results page appears showing performance stats and an option to restart or start a new test.
+7. User can change the theme at any point (e.g., footer/settings control) and the choice is remembered for next visit.
+
+---
+
+## 6. Feature Requirements
+
+### 6.1 Typing Test Engine (Must-have)
+- Continuous stream of random common English words rendered in a multi-line scrolling text area
+- Real-time character-level feedback: untyped, correct, incorrect, and extra (overtyped) characters are visually distinct
+- A visible blinking caret that tracks the current typing position accurately
+- Word-by-word progression: pressing space commits the current word and moves to the next
+- Backspace support to go back and correct the previous word (if not yet locked/scrolled past)
+- Clicking the typing area re-focuses input; losing focus shows a subtle "click to continue" overlay
+- Quick restart at any time via a visible restart button and a keyboard shortcut (Tab / Escape)
+
+### 6.2 Test Modes (Must-have)
+
+**Time Mode (duration-based — core requested feature)**
+- User selects a duration before starting: **15s, 30s, 60s, or 120s**
+- A live countdown is shown during the test
+- Word stream is effectively infinite — more words load automatically as the user progresses
+- Test ends the instant the countdown hits zero, scoring is based on progress up to that exact point
+
+**Words Mode**
+- User selects a target word count: **10, 25, 50, or 100**
+- A live progress indicator (e.g., "12/50") is shown during the test
+- Test ends the moment the final word is completed
+
+### 6.3 Modifiers (Must-have)
+- **Punctuation toggle** — adds commas, periods, capitalization, and quotation marks to a portion of the words
+- **Numbers toggle** — inserts standalone numbers into the word stream occasionally
+
+### 6.4 Live Stats (Must-have)
+- While the test is running, display:
+  - Time remaining (Time mode) or word progress (Words mode)
+  - Live WPM, updating continuously as the user types
+
+### 6.5 Results Page (Must-have)
+Displayed immediately after a test completes:
+- **Large WPM** — the headline stat
+- **Large Accuracy %**
+- Test details: mode used, duration/word count, language
+- Character breakdown: correct / incorrect / extra / missed counts
+- Total time taken
+- Restart / "next test" action to immediately generate a new test with the same settings
+- A light, non-intrusive prompt such as "Sign in to save your result" (no actual auth needs to be functional in v1 — placeholder only)
+
+**Nice-to-have for results page (if time allows):**
+- A simple line graph showing WPM over the course of the test (per-second tracking)
+- Raw WPM (speed including errors, before accuracy penalty)
+- Consistency score (based on variation in typing speed throughout the test)
+
+### 6.6 Theme System (Must-have — explicitly requested)
+- Ship with **two themes at launch**:
+  - **Dark Green (default)** — dark background, green accent family, matches the existing token palette already chosen for the brand
+  - **Light Green** — light background version of the same green accent family, so the brand identity is consistent across both themes
+- Theme choice is remembered across sessions (no login required)
+- Theme can be switched instantly without a page reload
+- The theme system should be built in a structured way (a defined set of color roles: background, surface, text, muted text, accent, caret, error) so that **additional themes can be added later** without redesigning the app — this is a forward-looking architectural requirement, even though only 2 themes ship in v1
+
+### 6.7 Settings Persistence (Must-have)
+- All user preferences — mode, duration/word count, punctuation/numbers toggles, and selected theme — should be remembered locally between visits, with no account required
+
+### 6.8 Keyboard Shortcuts (Should-have)
+- `Tab` or `Escape` — instantly restart the test with a fresh word set
+- Fully usable without touching the mouse, from configuring the test to restarting it
+
+---
+
+## 7. Explicitly Deferred (Future Phases, not part of this build)
+
+- User accounts and login
+- Saved result history / progress tracking over time
+- Leaderboards or global rankings
+- Additional languages or word lists
+- Quote mode, Zen mode, custom text mode
+- Full command-line/command-palette power-user interface
+- Large theme catalog (10+ themes)
+- Personal best tracking, streaks, achievement badges
+
+---
+
+## 8. Design Direction
+
+- Minimal, dark-first aesthetic with a green accent identity, extendable to a clean light variant
+- Flat design — no heavy shadows or gradients, generous spacing, rounded corners on interactive elements
+- Typography should feel modern and slightly technical/monospaced-adjacent for the typing area, with a clean sans-serif for UI chrome
+- The interface should stay out of the way — the typing area is always the visual focus, with configuration and results kept simple and unobtrusive
+
+---
+
+## 9. Success Criteria for v1
+
+- A user can land on the page and start typing within seconds, with zero setup required
+- Time mode and Words mode both function correctly and reliably end tests at the right moment
+- Results are accurate (WPM and accuracy calculations match expected typing test standards)
+- Switching between the dark and light green themes works instantly and the preference persists
+- The entire experience works smoothly with keyboard-only interaction
+- No login or backend is required for the app to be fully functional
+
+---
+
+## 10. Suggested Build Approach
+
+- Should be buildable as a fully client-side application (no backend dependency for v1)
+- All state (config, theme, in-progress test) can live in local component state plus browser local storage for persistence
+- Should be deployable as a static site
+
