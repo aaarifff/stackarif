@@ -1,0 +1,9 @@
+{
+  "name": "@typechamp/typing-engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc -p tsconfig.json", "lint": "eslint src tests", "test": "vitest run" },
+  "devDependencies": { "@repo/typescript-config": "workspace:*", "vitest": "^2.0.5" }
+}
