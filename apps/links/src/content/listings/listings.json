@@ -120,11 +120,11 @@
       },
 
       {
-        "name": "Example Four",
-        "slug": "example-top",
-        "url": "https://example.org",
-        "description": "A placeholder listing for list 3.",
-        "rating": null,
+        "name": "Typechamp - Typing tutor",
+        "slug": "typechamp",
+        "url": "https://stackarif-type.vercel.app/",
+        "description": "Find your rhythm Clear your mind. Let your fingers do the talking.",
+        "rating": 9.0,
         "featured": false,
         "favicon": ""
       }
