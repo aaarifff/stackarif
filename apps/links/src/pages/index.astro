@@ -4,7 +4,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import CategoryBox from '../components/CategoryBox.astro';
 import { sortListings } from '../lib/sort';
 import { SITE_TITLE, SITE_TAGLINE, PER_CATEGORY } from '../consts';
-
+import { Analytics } from "@vercel/analytics/next"
 const listings = await getCollection('listings');
 const categories = (await getCollection('categories')).sort(
   (a, b) => a.data.order - b.data.order || a.data.name.localeCompare(b.data.name)
@@ -39,4 +39,5 @@ const sections = categories
       ))}
     </div>
   )}
+ <Analytics/>
 </BaseLayout>
