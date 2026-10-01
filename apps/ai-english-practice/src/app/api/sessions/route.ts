@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { desc, eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { practiceSessions } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { handleApiError } from "@/lib/api";
@@ -30,7 +30,7 @@ export async function POST(req: Request) {
 export async function GET() {
   try {
     const user = await requireUser();
-    const rows = await db
+    const rows = await getDb()
       .select()
       .from(practiceSessions)
       .where(eq(practiceSessions.userId, user.id))

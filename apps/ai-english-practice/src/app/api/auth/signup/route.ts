@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { createSession, hashPassword, SESSION_COOKIE, SESSION_MAX_AGE_SECONDS } from "@/lib/auth";
 import { handleApiError } from "@/lib/api";
@@ -18,12 +18,12 @@ export async function POST(req: Request) {
   try {
     const body = schema.parse(await req.json());
 
-    const existing = await db.select().from(users).where(eq(users.email, body.email)).limit(1);
+    const existing = await getDb().select().from(users).where(eq(users.email, body.email)).limit(1);
     if (existing.length > 0) {
       return NextResponse.json({ error: "An account with this email already exists." }, { status: 409 });
     }
 
-    const [user] = await db
+    const [user] = await getDb()
       .insert(users)
       .values({
         email: body.email,

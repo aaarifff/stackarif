@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { assistanceEvents } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { handleApiError } from "@/lib/api";
@@ -19,7 +19,7 @@ export async function POST(req: Request, { params }: { params: Promise<{ id: str
     const { id } = await params;
     const body = schema.parse(await req.json());
     void user;
-    await db.insert(assistanceEvents).values({
+    await getDb().insert(assistanceEvents).values({
       sessionId: id,
       clientMessageId: body.clientMessageId ?? null,
       eventType: body.eventType,

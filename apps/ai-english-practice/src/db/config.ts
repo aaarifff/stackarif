@@ -1,6 +1,6 @@
 export function validateDatabaseUrl(value: string | undefined): string {
   const help =
-    "Set DATABASE_URL in .env to the complete PostgreSQL URI from Supabase > Connect > Session pooler. Keep the hostname, port, and /postgres ending, and URL-encode special characters in the password.";
+    "Set DATABASE_URL in your deployment environment (or .env locally) to the complete PostgreSQL URI from Supabase > Connect > Session pooler. Keep the hostname, port, and /postgres ending, and URL-encode special characters in the password.";
 
   if (!value?.trim()) {
     throw new Error(`DATABASE_URL is missing. ${help}`);

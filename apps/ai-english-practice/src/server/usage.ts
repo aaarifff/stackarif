@@ -1,5 +1,5 @@
 import { and, eq, sql } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { usageCounters } from "@/db/schema";
 
 export const DAILY_AI_REQUEST_LIMIT = Number(process.env.DAILY_AI_REQUEST_LIMIT || 150);
@@ -18,14 +18,14 @@ export class UsageLimitError extends Error {
 export async function reserveAiRequest(userId: string): Promise<void> {
   const day = todayString();
 
-  const existing = await db
+  const existing = await getDb()
     .select()
     .from(usageCounters)
     .where(and(eq(usageCounters.userId, userId), eq(usageCounters.day, day)))
     .limit(1);
 
   if (existing.length === 0) {
-    await db
+    await getDb()
       .insert(usageCounters)
       .values({ userId, day, aiRequests: 1 })
       .onConflictDoUpdate({
@@ -39,7 +39,7 @@ export async function reserveAiRequest(userId: string): Promise<void> {
     throw new UsageLimitError();
   }
 
-  await db
+  await getDb()
     .update(usageCounters)
     .set({ aiRequests: sql`${usageCounters.aiRequests} + 1` })
     .where(and(eq(usageCounters.userId, userId), eq(usageCounters.day, day)));
@@ -47,7 +47,7 @@ export async function reserveAiRequest(userId: string): Promise<void> {
 
 export async function getUsageToday(userId: string): Promise<{ used: number; limit: number }> {
   const day = todayString();
-  const existing = await db
+  const existing = await getDb()
     .select()
     .from(usageCounters)
     .where(and(eq(usageCounters.userId, userId), eq(usageCounters.day, day)))

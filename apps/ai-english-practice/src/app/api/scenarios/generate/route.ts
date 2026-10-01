@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { customScenarios } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { handleApiError } from "@/lib/api";
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
       explanationLanguage: user.explanationLanguage === "bn" ? "bn" : "none",
     });
 
-    await db.insert(customScenarios).values({
+    await getDb().insert(customScenarios).values({
       id: scenario.id,
       userId: user.id,
       title: scenario.title,

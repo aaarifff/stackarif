@@ -1,7 +1,7 @@
 import { randomBytes, randomUUID, scryptSync, timingSafeEqual } from "crypto";
 import { cookies } from "next/headers";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { authSessions, users } from "@/db/schema";
 
 export const SESSION_COOKIE = "clienttalk_session";
@@ -27,12 +27,12 @@ export type AuthUser = typeof users.$inferSelect;
 export async function createSession(userId: string): Promise<string> {
   const token = randomUUID() + randomUUID();
   const expiresAt = new Date(Date.now() + SESSION_TTL_MS);
-  await db.insert(authSessions).values({ id: token, userId, expiresAt });
+  await getDb().insert(authSessions).values({ id: token, userId, expiresAt });
   return token;
 }
 
 export async function destroySession(token: string): Promise<void> {
-  await db.delete(authSessions).where(eq(authSessions.id, token));
+  await getDb().delete(authSessions).where(eq(authSessions.id, token));
 }
 
 export async function getCurrentUser(): Promise<AuthUser | null> {
@@ -40,7 +40,7 @@ export async function getCurrentUser(): Promise<AuthUser | null> {
   const token = cookieStore.get(SESSION_COOKIE)?.value;
   if (!token) return null;
 
-  const rows = await db
+  const rows = await getDb()
     .select({ user: users, session: authSessions })
     .from(authSessions)
     .innerJoin(users, eq(authSessions.userId, users.id))

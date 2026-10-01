@@ -14,6 +14,12 @@ For a new database, run `pnpm db:generate`, review the generated SQL in `drizzle
 
 Keep `.env` private; it is ignored by Git.
 
+## Vercel deployment
+
+In the Vercel project's Settings → Environment Variables, add `DATABASE_URL` and `GEMINI_API_KEY` for Production and any Preview environments you use, then redeploy. Local `.env` files are not uploaded through Git. Use the complete Supabase Session pooler PostgreSQL URI for `DATABASE_URL`, including the database password, hostname, port, and database name.
+
+The root Turbo configuration passes the app's server environment variables through to tasks. Database initialization is deferred until a request needs it, so builds can finish without database credentials. Login and other database features still require a valid `DATABASE_URL` at runtime; `/api/health` returns HTTP 500 if the database is unavailable.
+
 ## Theming
 
 The UI has light and dark themes, modelled on the [Plasma](https://plasma-astro-template.vercel.app/) shadcn/ui template. Colours come from semantic tokens defined once in `src/app/globals.css` (`--background`, `--card`, `--border`, `--primary`, `--muted`, `--brand`, plus `--danger` / `--warning` / `--success`), exposed to Tailwind through `@theme inline`. Components use the generated utilities (`bg-card`, `text-muted-foreground`, `border-border`, …) instead of raw palette classes such as `bg-slate-50`, so a token change re-themes the whole app.

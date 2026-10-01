@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { desc, eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { practiceSessions } from "@/db/schema";
 import { getCurrentUser } from "@/lib/auth";
 import AppShell from "@/components/AppShell";
@@ -14,7 +14,7 @@ export default async function HistoryPage() {
   if (!user) redirect("/login");
   if (!user.onboarded) redirect("/onboarding");
 
-  const sessions = await db
+  const sessions = await getDb()
     .select()
     .from(practiceSessions)
     .where(eq(practiceSessions.userId, user.id))

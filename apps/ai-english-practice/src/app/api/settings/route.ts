@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { handleApiError } from "@/lib/api";
@@ -22,7 +22,7 @@ export async function PATCH(req: Request) {
     const user = await requireUser();
     const body = schema.parse(await req.json());
 
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(users)
       .set(body)
       .where(eq(users.id, user.id))
@@ -48,7 +48,7 @@ export async function PATCH(req: Request) {
 export async function DELETE() {
   try {
     const user = await requireUser();
-    await db.delete(users).where(eq(users.id, user.id));
+    await getDb().delete(users).where(eq(users.id, user.id));
     const res = NextResponse.json({ ok: true });
     res.cookies.delete("clienttalk_session");
     return res;

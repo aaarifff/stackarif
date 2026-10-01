@@ -1,5 +1,5 @@
 import { and, asc, eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { messages, practiceSessions, reviews, suggestionSets, turnRequests } from "@/db/schema";
 import { SCENARIOS } from "@/content/scenarios";
 import { resolveScenarioForUser } from "@/server/scenarios/resolve";
@@ -12,7 +12,7 @@ export class ForbiddenError extends Error {}
 export class ValidationError extends Error {}
 
 async function requireOwnedSession(sessionId: string, userId: string) {
-  const rows = await db
+  const rows = await getDb()
     .select()
     .from(practiceSessions)
     .where(eq(practiceSessions.id, sessionId))
@@ -24,7 +24,7 @@ async function requireOwnedSession(sessionId: string, userId: string) {
 }
 
 async function getMessageHistory(sessionId: string): Promise<HistoryTurn[]> {
-  const rows = await db
+  const rows = await getDb()
     .select()
     .from(messages)
     .where(eq(messages.sessionId, sessionId))
@@ -41,7 +41,7 @@ async function persistSuggestions(
   const clarify = suggestions.find((s) => s.kind === "clarify")!;
   const nextStep = suggestions.find((s) => s.kind === "next_step")!;
 
-  const [row] = await db
+  const [row] = await getDb()
     .insert(suggestionSets)
     .values({
       sessionId,
@@ -72,7 +72,7 @@ export async function createPracticeSession(params: {
 
   await reserveAiRequest(params.userId);
 
-  const [session] = await db
+  const [session] = await getDb()
     .insert(practiceSessions)
     .values({
       userId: params.userId,
@@ -110,7 +110,7 @@ export async function createPracticeSession(params: {
     };
   }
 
-  const [clientMessage] = await db
+  const [clientMessage] = await getDb()
     .insert(messages)
     .values({
       sessionId: session.id,
@@ -123,7 +123,7 @@ export async function createPracticeSession(params: {
 
   const suggestions = await persistSuggestions(session.id, clientMessage.id, generated.suggestions);
 
-  await db
+  await getDb()
     .update(practiceSessions)
     .set({ turnCount: 1 })
     .where(eq(practiceSessions.id, session.id));
@@ -134,20 +134,20 @@ export async function createPracticeSession(params: {
 export async function getFullSession(sessionId: string, userId: string) {
   const session = await requireOwnedSession(sessionId, userId);
   const scenario = await resolveScenarioForUser(userId, session.scenarioId);
-  const msgRows = await db
+  const msgRows = await getDb()
     .select()
     .from(messages)
     .where(eq(messages.sessionId, sessionId))
     .orderBy(asc(messages.turnIndex));
 
-  const suggestionRows = await db
+  const suggestionRows = await getDb()
     .select()
     .from(suggestionSets)
     .where(eq(suggestionSets.sessionId, sessionId));
 
   const suggestionsByMessage = new Map(suggestionRows.map((s) => [s.clientMessageId, s]));
 
-  const reviewRows = await db.select().from(reviews).where(eq(reviews.sessionId, sessionId)).limit(1);
+  const reviewRows = await getDb().select().from(reviews).where(eq(reviews.sessionId, sessionId)).limit(1);
 
   return {
     session,
@@ -180,7 +180,7 @@ export async function submitTurn(params: {
     throw new ValidationError("Message must be between 1 and 2000 characters.");
   }
 
-  const existingRequest = await db
+  const existingRequest = await getDb()
     .select()
     .from(turnRequests)
     .where(and(eq(turnRequests.sessionId, params.sessionId), eq(turnRequests.clientRequestId, params.clientRequestId)))
@@ -198,7 +198,7 @@ export async function submitTurn(params: {
 
   await reserveAiRequest(params.userId);
 
-  const [userMessage] = await db
+  const [userMessage] = await getDb()
     .insert(messages)
     .values({
       sessionId: session.id,
@@ -214,7 +214,7 @@ export async function submitTurn(params: {
     })
     .returning();
 
-  await db
+  await getDb()
     .insert(turnRequests)
     .values({ sessionId: session.id, clientRequestId: params.clientRequestId, userMessageId: userMessage.id })
     .onConflictDoNothing();
@@ -243,7 +243,7 @@ export async function submitTurn(params: {
     };
   }
 
-  const [clientMessage] = await db
+  const [clientMessage] = await getDb()
     .insert(messages)
     .values({
       sessionId: session.id,
@@ -256,12 +256,12 @@ export async function submitTurn(params: {
 
   await persistSuggestions(session.id, clientMessage.id, generated.suggestions);
 
-  await db
+  await getDb()
     .update(turnRequests)
     .set({ clientMessageId: clientMessage.id })
     .where(and(eq(turnRequests.sessionId, params.sessionId), eq(turnRequests.clientRequestId, params.clientRequestId)));
 
-  await db
+  await getDb()
     .update(practiceSessions)
     .set({ turnCount: (session.turnCount ?? 0) + 2 })
     .where(eq(practiceSessions.id, session.id));
@@ -276,7 +276,7 @@ export async function retrySuggestions(params: { userId: string; sessionId: stri
   if (!scenario) throw new NotFoundError("Scenario content missing");
 
   const history = await getMessageHistory(params.sessionId);
-  const msgRows = await db.select().from(messages).where(eq(messages.sessionId, params.sessionId)).orderBy(asc(messages.turnIndex));
+  const msgRows = await getDb().select().from(messages).where(eq(messages.sessionId, params.sessionId)).orderBy(asc(messages.turnIndex));
   const targetIndex = msgRows.findIndex((m) => m.id === params.clientMessageId);
   if (targetIndex === -1) throw new NotFoundError("Message not found");
 
@@ -294,7 +294,7 @@ export async function retrySuggestions(params: { userId: string; sessionId: stri
     learnerMessage: lastUserMessage?.text ?? null,
   });
 
-  await db.delete(suggestionSets).where(eq(suggestionSets.clientMessageId, params.clientMessageId));
+  await getDb().delete(suggestionSets).where(eq(suggestionSets.clientMessageId, params.clientMessageId));
   const suggestions = await persistSuggestions(params.sessionId, params.clientMessageId, generated.suggestions);
   return suggestions;
 }
@@ -305,13 +305,13 @@ export async function endSession(params: { userId: string; sessionId: string }) 
   if (!scenario) throw new NotFoundError("Scenario content missing");
 
   if (session.status !== "ended") {
-    await db
+    await getDb()
       .update(practiceSessions)
       .set({ status: "ended", endedAt: new Date() })
       .where(eq(practiceSessions.id, session.id));
   }
 
-  const existingReview = await db.select().from(reviews).where(eq(reviews.sessionId, session.id)).limit(1);
+  const existingReview = await getDb().select().from(reviews).where(eq(reviews.sessionId, session.id)).limit(1);
   if (existingReview.length > 0) {
     return existingReview[0];
   }
@@ -320,7 +320,7 @@ export async function endSession(params: { userId: string; sessionId: string }) 
   const learnerTurnCount = history.filter((h) => h.role === "user").length;
 
   if (learnerTurnCount === 0) {
-    const [review] = await db
+    const [review] = await getDb()
       .insert(reviews)
       .values({
         sessionId: session.id,
@@ -338,7 +338,7 @@ export async function endSession(params: { userId: string; sessionId: string }) 
   await reserveAiRequest(params.userId);
   const result = await generateReview({ scenario, history });
 
-  const [review] = await db
+  const [review] = await getDb()
     .insert(reviews)
     .values({
       sessionId: session.id,
@@ -363,7 +363,7 @@ function pickNextScenario(currentId: string): string | null {
 
 export async function deleteSession(params: { userId: string; sessionId: string }) {
   const session = await requireOwnedSession(params.sessionId, params.userId);
-  await db.delete(practiceSessions).where(eq(practiceSessions.id, session.id));
+  await getDb().delete(practiceSessions).where(eq(practiceSessions.id, session.id));
 }
 
 export async function exportSessionMarkdown(params: { userId: string; sessionId: string }): Promise<string> {

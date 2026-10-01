@@ -1,6 +1,12 @@
 {
   "$schema": "https://turborepo.dev/schema.json",
   "ui": "tui",
+  "globalPassThroughEnv": [
+    "DATABASE_URL",
+    "GEMINI_API_KEY",
+    "GEMINI_MODEL",
+    "DAILY_AI_REQUEST_LIMIT"
+  ],
   "tasks": {
     "build": {
       "dependsOn": ["^build"],

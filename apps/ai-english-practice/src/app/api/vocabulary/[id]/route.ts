@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { and, eq } from "drizzle-orm";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { vocabularyItems } from "@/db/schema";
 import { requireUser } from "@/lib/auth";
 import { handleApiError } from "@/lib/api";
@@ -25,7 +25,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
     const { id } = await params;
     const body = schema.parse(await req.json());
 
-    const existing = await db
+    const existing = await getDb()
       .select()
       .from(vocabularyItems)
       .where(and(eq(vocabularyItems.id, id), eq(vocabularyItems.userId, user.id)))
@@ -38,7 +38,7 @@ export async function PATCH(req: Request, { params }: { params: Promise<{ id: st
       updates.lastReviewedAt = new Date();
     }
 
-    const [updated] = await db
+    const [updated] = await getDb()
       .update(vocabularyItems)
       .set(updates)
       .where(and(eq(vocabularyItems.id, id), eq(vocabularyItems.userId, user.id)))
@@ -54,7 +54,7 @@ export async function DELETE(_req: Request, { params }: { params: Promise<{ id: 
   try {
     const user = await requireUser();
     const { id } = await params;
-    await db.delete(vocabularyItems).where(and(eq(vocabularyItems.id, id), eq(vocabularyItems.userId, user.id)));
+    await getDb().delete(vocabularyItems).where(and(eq(vocabularyItems.id, id), eq(vocabularyItems.userId, user.id)));
     return NextResponse.json({ ok: true });
   } catch (err) {
     return handleApiError(err);
