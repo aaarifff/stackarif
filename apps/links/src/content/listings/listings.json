@@ -86,10 +86,10 @@
     "category": "open-source",
     "listings": [
       {
-        "name": "My Open Source Project",
-        "slug": "my-open-source-project",
-        "url": "https://github.com/example/project",
-        "description": "An open source project.",
+        "name": "Game in Your Mind",
+        "slug": "Games",
+        "url": "https://stackarif-game.netlify.app/",
+        "description": "Game in Your Mind, Play with Free no ads",
         "rating": 9,
         "featured": true,
         "favicon": ""
