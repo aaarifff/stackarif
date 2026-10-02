@@ -60,7 +60,6 @@ export default function PracticeRoom({
   const [typingMessageId, setTypingMessageId] = useState<string | null>(null);
 
   const pendingRequestId = useRef<string>(genRequestId());
-  const transcriptEndRef = useRef<HTMLDivElement | null>(null);
   const transcriptRef = useRef<HTMLDivElement | null>(null);
   const stickToBottomRef = useRef(true);
   const hasAutoPlayed = useRef<Set<string>>(new Set());
@@ -80,8 +79,10 @@ export default function PracticeRoom({
   const displayStatus: RoomStatus = micError ? "error" : status;
 
   useEffect(() => {
-    if (!stickToBottomRef.current) return;
-    transcriptEndRef.current?.scrollIntoView({ behavior: "smooth", block: "end" });
+    const el = transcriptRef.current;
+    if (!el || !stickToBottomRef.current) return;
+    // Keep automatic scrolling inside the conversation, without moving the page.
+    el.scrollTo({ top: el.scrollHeight, behavior: "smooth" });
   }, [messages.length, status]);
 
   /** Re-checked on scroll so a reveal only drags the view down when the reader is already at the bottom. */
@@ -353,8 +354,8 @@ export default function PracticeRoom({
       </aside>
 
       {/* Conversation column */}
-      <section className="order-2 flex min-h-[70vh] flex-col rounded-xl border border-border bg-card lg:order-none">
-        <div className="flex items-center justify-between border-b border-border px-4 py-3">
+      <section className="order-2 flex h-[70dvh] min-h-0 min-w-0 flex-col rounded-xl border border-border bg-card lg:sticky lg:top-24 lg:order-none lg:h-[calc(100dvh-8rem)]">
+        <div className="flex shrink-0 items-center justify-between border-b border-border px-4 py-3">
           <p className="text-sm font-medium text-muted-foreground">
             Status: <span className="font-semibold text-foreground capitalize">{displayStatus}</span>
           </p>
@@ -370,7 +371,7 @@ export default function PracticeRoom({
         <div
           ref={transcriptRef}
           onScroll={handleTranscriptScroll}
-          className="flex-1 space-y-3 overflow-y-auto scrollbar-thin px-4 py-4"
+          className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain scrollbar-thin px-4 py-4"
         >
           {messages.map((m) => (
             <MessageBubble
@@ -384,7 +385,6 @@ export default function PracticeRoom({
             />
           ))}
           {status === "thinking" && <TypingIndicator name={scenario.persona.name} />}
-          <div ref={transcriptEndRef} />
         </div>
 
         {micNotice && (
@@ -399,7 +399,7 @@ export default function PracticeRoom({
         )}
         {saveNotice && <div className="mx-4 mb-2 rounded-lg bg-success-muted px-3 py-2 text-xs text-success">{saveNotice}</div>}
 
-        <div className="safe-bottom border-t border-border p-4">
+        <div className="sticky bottom-0 z-10 shrink-0 rounded-b-xl border-t border-border bg-card p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
           {recordingActive ? (
             <div className="rounded-xl border border-danger/30 bg-destructive/10 px-4 py-3">
               <div className="flex items-center justify-between gap-3">
@@ -416,7 +416,7 @@ export default function PracticeRoom({
                   {recognition.status === "requesting" ? "Cancel" : "Stop recording"}
                 </button>
               </div>
-              <p className="mt-2 min-h-[1.25rem] text-sm text-muted-foreground" role="status" aria-live="polite">
+              <p className="mt-2 max-h-24 min-h-[1.25rem] overflow-y-auto overscroll-contain text-sm text-muted-foreground" role="status" aria-live="polite">
                 {recognition.status === "requesting" && <span>Waiting for your microphone… allow access when asked.</span>}
                 {recognition.status !== "requesting" && recognition.transcript && <span>{recognition.transcript} </span>}
                 {recognition.status !== "requesting" && recognition.interimTranscript && (
@@ -436,7 +436,7 @@ export default function PracticeRoom({
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 rows={3}
-                className="w-full rounded-xl border border-border p-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
+                className="w-full resize-none rounded-xl border border-border p-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20"
               />
               <div className="flex gap-2">
                 <button
@@ -477,7 +477,7 @@ export default function PracticeRoom({
                 rows={2}
                 maxLength={2000}
                 disabled={status === "thinking"}
-                className="w-full rounded-xl border border-border p-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:bg-background"
+                className="w-full resize-none rounded-xl border border-border p-3 text-sm outline-none focus:border-brand focus:ring-2 focus:ring-brand/20 disabled:bg-background"
               />
               <div className="flex flex-wrap items-center gap-2">
                 <button

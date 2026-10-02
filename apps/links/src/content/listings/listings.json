@@ -127,6 +127,16 @@
         "rating": 9.0,
         "featured": false,
         "favicon": ""
+      },
+
+      {
+        "name": "Client Commmunication Senario",
+        "slug": "Clienttalk",
+        "url": "https://stackarif-clienttalk.vercel.app",
+        "description": "Talk to an AI client. Get three reply ideas. Speak with confidence.",
+        "rating": 6.0,
+        "featured": false,
+        "favicon": ""
       }
     ]
   }
