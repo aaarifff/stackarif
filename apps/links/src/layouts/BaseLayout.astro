@@ -2,7 +2,7 @@
 import '../styles/app.css';
 import { getCollection } from 'astro:content';
 import { SITE_TITLE, SITE_DESCRIPTION } from '../consts';
-
+import Analytics from '@vercel/analytics/astro'
 interface Props {
   title?: string;
   description?: string;
@@ -38,6 +38,7 @@ const footerPages = pages.filter((p) => p.data.inFooter);
   <meta property="og:description" content={pageDesc} />
   <meta property="og:type" content="website" />
   <link rel="sitemap" href={`${base}sitemap-index.xml`.replace(/\/+/g, '/')} />
+   <Analytics />
 </head>
 <body>
 
