@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-950 text-slate-100 dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cyber Security Defacement Simulator & Generator</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600;700&family=Share+Tech+Mono&family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Tone.js for Sound Synthesizer Effects -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tone/14.8.49/Tone.js"></script>
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            green: '#00ff66',
+                            red: '#ff0033',
+                            blue: '#00e5ff',
+                            purple: '#b026ff',
+                            dark: '#05070f'
+                        }
+                    },
+                    fontFamily: {
+                        mono: ['"Share Tech Mono"', '"Fira Code"', 'monospace'],
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #090d16;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 3px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
+
+        /* Scanline Overlay Effect */
+        .scanlines {
+            background: linear-gradient(
+                rgba(18, 16, 16, 0) 50%, 
+                rgba(0, 0, 0, 0.25) 50%
+            ), linear-gradient(
+                90deg,
+                rgba(255, 0, 0, 0.03),
+                rgba(0, 255, 0, 0.01),
+                rgba(0, 0, 255, 0.03)
+            );
+            background-size: 100% 3px, 6px 100%;
+            pointer-events: none;
+        }
+
+        /* Glitch Text Effect */
+        .glitch-text {
+            position: relative;
+            display: inline-block;
+        }
+        .glitch-text::before,
+        .glitch-text::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            clip: rect(0, 0, 0, 0);
+        }
+        .glitch-active::before {
+            left: -2px;
+            text-shadow: 2px 0 #ff0033;
+            animation: glitch-anim-1 2s infinite linear alternate-reverse;
+        }
+        .glitch-active::after {
+            left: 2px;
+            text-shadow: -2px 0 #00e5ff;
+            animation: glitch-anim-2 3s infinite linear alternate-reverse;
+        }
+
+        @keyframes glitch-anim-1 {
+            0% { clip: rect(20px, 9999px, 15px, 0); }
+            20% { clip: rect(50px, 9999px, 70px, 0); }
+            40% { clip: rect(10px, 9999px, 80px, 0); }
+            60% { clip: rect(85px, 9999px, 10px, 0); }
+            80% { clip: rect(30px, 9999px, 40px, 0); }
+            100% { clip: rect(65px, 9999px, 90px, 0); }
+        }
+        @keyframes glitch-anim-2 {
+            0% { clip: rect(40px, 9999px, 30px, 0); }
+            25% { clip: rect(80px, 9999px, 10px, 0); }
+            50% { clip: rect(15px, 9999px, 60px, 0); }
+            75% { clip: rect(90px, 9999px, 20px, 0); }
+            100% { clip: rect(25px, 9999px, 75px, 0); }
+        }
+
+        /* CRT Screen Flicker */
+        .crt-flicker {
+            animation: flicker 0.15s infinite;
+        }
+        @keyframes flicker {
+            0% { opacity: 0.97; }
+            50% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+    </style>
+</head>
+
+<body class="h-full flex flex-col bg-slate-950 font-sans antialiased select-none overflow-hidden text-slate-200">
+
+    <!-- TOP HEADER / CONTROL BAR -->
+    <header class="h-14 border-b border-slate-800 bg-slate-900/80 backdrop-blur px-4 flex items-center justify-between z-20 shrink-0">
+        <div class="flex items-center space-x-3">
+            <div class="p-2 bg-emerald-500/10 border border-emerald-500/30 rounded-lg text-emerald-400">
+                <i class="fa-solid me-0.5 fa-shield-halved text-lg"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-sm md:text-base text-slate-100 leading-none">Defacement Lab <span class="text-xs font-normal text-emerald-400 bg-emerald-950 border border-emerald-800 px-2 py-0.5 rounded-full ml-1">Edu Simulator</span></h1>
+                <p class="text-[11px] text-slate-400 font-mono mt-0.5">Defacement Landing Page Studio & Cyber Threat Demo</p>
+            </div>
+        </div>
+
+        <!-- Quick Presets -->
+        <div class="hidden md:flex items-center bg-slate-950 p-1 rounded-lg border border-slate-800 text-xs font-mono">
+            <button onclick="loadPreset('hacktivist')" class="preset-btn px-3 py-1.5 rounded-md hover:bg-slate-800 transition text-emerald-400 active-preset" id="btn-preset-hacktivist">
+                <i class="fa-solid fa-terminal mr-1.5"></i>Hacktivist
+            </button>
+            <button onclick="loadPreset('ransomware')" class="preset-btn px-3 py-1.5 rounded-md hover:bg-slate-800 transition text-rose-400" id="btn-preset-ransomware">
+                <i class="fa-solid fa-lock mr-1.5"></i>Ransomware
+            </button>
+            <button onclick="loadPreset('alert')" class="preset-btn px-3 py-1.5 rounded-md hover:bg-slate-800 transition text-amber-400" id="btn-preset-alert">
+                <i class="fa-solid fa-triangle-exclamation mr-1.5"></i>System Warning
+            </button>
+            <button onclick="loadPreset('maintenance')" class="preset-btn px-3 py-1.5 rounded-md hover:bg-slate-800 transition text-cyan-400" id="btn-preset-maintenance">
+                <i class="fa-solid fa-screwdriver-wrench mr-1.5"></i>Sec Maintenance
+            </button>
+        </div>
+
+        <!-- Right Header Controls -->
+        <div class="flex items-center space-x-2">
+            <button onclick="toggleAudio()" id="audio-toggle-btn" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 transition text-xs font-mono flex items-center gap-1.5" title="Toggle Sound Synth Effects">
+                <i class="fa-solid fa-volume-xmark text-rose-400" id="audio-icon"></i>
+                <span class="hidden sm:inline" id="audio-status">Muted</span>
+            </button>
+            <button onclick="triggerFullscreen()" class="p-2 rounded-lg bg-slate-800 border border-slate-700 hover:bg-slate-700 text-slate-300 transition text-xs font-mono" title="Full Screen Preview">
+                <i class="fa-solid fa-expand"></i>
+            </button>
+            <button onclick="openExportModal()" class="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-xs transition flex items-center gap-1.5">
+                <i class="fa-solid fa-code"></i>
+                <span>Export Code</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN STUDIO WORKSPACE -->
+    <div class="flex-1 flex flex-col lg:flex-row overflow-hidden relative">
+
+        <!-- LEFT CONTROL PANEL (EDITOR & CONTROLS) -->
+        <aside class="w-full lg:w-96 border-b lg:border-b-0 lg:border-r border-slate-800 bg-slate-900/60 overflow-y-auto shrink-0 flex flex-col z-10">
+            
+            <!-- Mobile Preset Selector -->
+            <div class="p-3 border-b border-slate-800 md:hidden bg-slate-950/50">
+                <label class="text-xs font-mono text-slate-400 block mb-1.5">Preset Theme:</label>
+                <div class="grid grid-cols-2 gap-1.5 text-xs font-mono">
+                    <button onclick="loadPreset('hacktivist')" class="px-2 py-1.5 rounded bg-slate-800 text-emerald-400 border border-slate-700">Hacktivist</button>
+                    <button onclick="loadPreset('ransomware')" class="px-2 py-1.5 rounded bg-slate-800 text-rose-400 border border-slate-700">Ransomware</button>
+                    <button onclick="loadPreset('alert')" class="px-2 py-1.5 rounded bg-slate-800 text-amber-400 border border-slate-700">Warning Alert</button>
+                    <button onclick="loadPreset('maintenance')" class="px-2 py-1.5 rounded bg-slate-800 text-cyan-400 border border-slate-700">Maintenance</button>
+                </div>
+            </div>
+
+            <div class="p-4 space-y-5 flex-1">
+
+                <!-- Section: Page Setup & Aesthetics -->
+                <div class="space-y-3">
+                    <h2 class="text-xs font-mono font-bold tracking-wider text-slate-400 uppercase flex items-center justify-between">
+                        <span>1. Visual Theme & Effects</span>
+                        <i class="fa-solid fa-sliders text-emerald-500"></i>
+                    </h2>
+                    
+                    <!-- Color Palette Selection -->
+                    <div>
+                        <label class="text-xs text-slate-300 font-medium block mb-1">Primary Accent Color</label>
+                        <div class="flex items-center gap-2">
+                            <input type="color" id="input-accent-color" value="#00ff66" onchange="updateCustomTheme()" class="w-8 h-8 rounded border border-slate-700 bg-slate-950 cursor-pointer">
+                            <span id="hex-accent-color" class="font-mono text-xs text-slate-400">#00ff66</span>
+                        </div>
+                    </div>
+
+                    <!-- Visual Effects Toggles -->
+                    <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                        <label class="flex items-center space-x-2 p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-700">
+                            <input type="checkbox" id="chk-matrix-rain" checked onchange="toggleMatrixRain()" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>Matrix Rain</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-700">
+                            <input type="checkbox" id="chk-glitch-effect" checked onchange="toggleGlitchEffect()" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>Glitch FX</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-700">
+                            <input type="checkbox" id="chk-scanlines" checked onchange="toggleScanlines()" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>Scanlines</span>
+                        </label>
+                        <label class="flex items-center space-x-2 p-2 rounded bg-slate-950 border border-slate-800 cursor-pointer hover:border-slate-700">
+                            <input type="checkbox" id="chk-audio-pulse" onchange="toggleAudioPulse()" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>Siren Alarm</span>
+                        </label>
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Section: Content Customization -->
+                <div class="space-y-3">
+                    <h2 class="text-xs font-mono font-bold tracking-wider text-slate-400 uppercase flex items-center justify-between">
+                        <span>2. Content Configuration</span>
+                        <i class="fa-solid fa-pen-to-square text-emerald-500"></i>
+                    </h2>
+
+                    <!-- Icon Selection -->
+                    <div>
+                        <label class="text-xs text-slate-300 font-medium block mb-1">Central Emblem Icon</label>
+                        <select id="select-emblem-icon" onchange="updateContent()" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-slate-600 font-mono">
+                            <option value="fa-skull">Skull & Crossbones (Hacktivist)</option>
+                            <option value="fa-biohazard">Biohazard Symbol</option>
+                            <option value="fa-lock">Security Lock (Ransomware)</option>
+                            <option value="fa-triangle-exclamation">Warning Triangle</option>
+                            <option value="fa-radiation">Radiation Sign</option>
+                            <option value="fa-user-ninja">Cyber Rogue / Ninja</option>
+                            <option value="fa-shield-cat">Shield Security</option>
+                        </select>
+                    </div>
+
+                    <!-- Main Title Header -->
+                    <div>
+                        <label class="text-xs text-slate-300 font-medium block mb-1">Headline Text</label>
+                        <input type="text" id="input-headline" value="HACKED BY ANONYMOUS CREW" oninput="updateContent()" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-slate-600 font-mono">
+                    </div>
+
+                    <!-- Hacker Handle / Group Name -->
+                    <div>
+                        <label class="text-xs text-slate-300 font-medium block mb-1">Actor / Threat Group ID</label>
+                        <input type="text" id="input-actor" value="Ghost_Cyber_Squad_v3" oninput="updateContent()" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-slate-600 font-mono">
+                    </div>
+
+                    <!-- Main Statement Message -->
+                    <div>
+                        <label class="text-xs text-slate-300 font-medium block mb-1">Defacement / Extortion Message</label>
+                        <textarea id="input-message" rows="4" oninput="updateContent()" class="w-full bg-slate-950 border border-slate-800 rounded p-2.5 text-xs text-slate-200 focus:outline-none focus:border-slate-600 font-mono resize-none leading-relaxed">YOUR SECURITY SYSTEM WAS WEAK. WE HAVE ACCESS TO ALL PRIVATE DATABASES AND CONFIDENTIAL DOCUMENTS. LEAK IMMINENT.</textarea>
+                    </div>
+
+                    <!-- Additional Details / Target ID / BTC -->
+                    <div>
+                        <label class="text-xs text-slate-300 font-medium block mb-1">Secondary Key/Value Metadata</label>
+                        <input type="text" id="input-meta-1" value="TARGET ID: #SEC-90823-X" oninput="updateContent()" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-slate-600 font-mono mb-2">
+                        <input type="text" id="input-meta-2" value="TOR CONTACT: darknet_portal_node.onion" oninput="updateContent()" class="w-full bg-slate-950 border border-slate-800 rounded px-3 py-1.5 text-xs text-slate-200 focus:outline-none focus:border-slate-600 font-mono">
+                    </div>
+                </div>
+
+                <hr class="border-slate-800">
+
+                <!-- Section: Countdown Timer -->
+                <div class="space-y-3">
+                    <h2 class="text-xs font-mono font-bold tracking-wider text-slate-400 uppercase flex items-center justify-between">
+                        <span>3. Urgent Countdown Timer</span>
+                        <i class="fa-solid fa-clock text-emerald-500"></i>
+                    </h2>
+                    <div class="flex items-center space-x-2">
+                        <label class="flex items-center space-x-2 text-xs font-mono text-slate-300 cursor-pointer">
+                            <input type="checkbox" id="chk-show-timer" checked onchange="toggleCountdownTimer()" class="rounded bg-slate-900 border-slate-700 text-emerald-500 focus:ring-0">
+                            <span>Enable Countdown</span>
+                        </label>
+                    </div>
+                    <div class="grid grid-cols-2 gap-2 font-mono text-xs">
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Hours</label>
+                            <input type="number" id="timer-hours" value="48" min="0" max="999" onchange="resetTimer()" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-200 focus:outline-none">
+                        </div>
+                        <div>
+                            <label class="text-[11px] text-slate-400 block mb-1">Minutes</label>
+                            <input type="number" id="timer-minutes" value="00" min="0" max="59" onchange="resetTimer()" class="w-full bg-slate-950 border border-slate-800 rounded px-2.5 py-1 text-slate-200 focus:outline-none">
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Footer info inside panel -->
+            <div class="p-3 bg-slate-950 border-t border-slate-800 text-[11px] text-slate-500 font-mono text-center">
+                Educational Security Tool • No real exploit features
+            </div>
+
+        </aside>
+
+        <!-- RIGHT PREVIEW CANVAS (INTERACTIVE DEFACEMENT PREVIEW) -->
+        <main class="flex-1 bg-black relative flex flex-col items-center justify-center overflow-hidden p-4 sm:p-8" id="preview-container">
+            
+            <!-- Matrix Code Rain Canvas -->
+            <canvas id="matrix-canvas" class="absolute inset-0 w-full h-full opacity-30 pointer-events-none"></canvas>
+
+            <!-- Scanlines Layer -->
+            <div id="scanline-layer" class="scanlines absolute inset-0 w-full h-full z-10"></div>
+
+            <!-- Red Flash Emergency Light (Optional sound pulse visual) -->
+            <div id="alarm-flash-layer" class="absolute inset-0 bg-rose-600/10 opacity-0 pointer-events-none transition-opacity duration-300 z-15"></div>
+
+            <!-- MAIN LANDING PAGE CONTENT CONTAINER -->
+            <div id="landing-card" class="relative z-20 max-w-3xl w-full bg-slate-950/80 border border-emerald-500/30 rounded-2xl p-6 sm:p-10 shadow-2xl backdrop-blur-md text-center transition-all duration-300 flex flex-col items-center">
+                
+                <!-- Central Icon Emblem -->
+                <div class="relative mb-6 group">
+                    <div id="emblem-glow" class="absolute -inset-2 bg-emerald-500/20 rounded-full blur-xl transition-all duration-500"></div>
+                    <div id="emblem-box" class="relative w-20 h-20 sm:w-24 sm:h-24 rounded-2xl bg-slate-900 border border-emerald-500/40 flex items-center justify-center text-emerald-400 text-4xl sm:text-5xl shadow-inner">
+                        <i id="preview-emblem-icon" class="fa-solid fa-skull"></i>
+                    </div>
+                </div>
+
+                <!-- Headline -->
+                <h1 id="preview-headline" class="text-2xl sm:text-4xl font-extrabold font-mono tracking-tight text-emerald-400 mb-2 glitch-text glitch-active" data-text="HACKED BY ANONYMOUS CREW">
+                    HACKED BY ANONYMOUS CREW
+                </h1>
+
+                <!-- Hacker ID Subtitle -->
+                <div id="preview-actor-badge" class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 font-mono text-xs sm:text-sm mb-6">
+                    <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                    <span id="preview-actor">Actor: Ghost_Cyber_Squad_v3</span>
+                </div>
+
+                <!-- Main Terminal Message / Typewriter -->
+                <div class="w-full bg-slate-900/90 border border-slate-800 rounded-xl p-4 sm:p-5 text-left mb-6 font-mono text-xs sm:text-sm leading-relaxed text-slate-300 shadow-inner">
+                    <div class="flex items-center justify-between border-b border-slate-800 pb-2 mb-3 text-[11px] text-slate-500">
+                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-terminal text-slate-400"></i> SYSTEM_ALERT_LOG.TXT</span>
+                        <span id="preview-timestamp">STATUS: COMPROMISED</span>
+                    </div>
+                    <p id="preview-message" class="whitespace-pre-line text-emerald-400/90">
+                        YOUR SECURITY SYSTEM WAS WEAK. WE HAVE ACCESS TO ALL PRIVATE DATABASES AND CONFIDENTIAL DOCUMENTS. LEAK IMMINENT.
+                    </p>
+                </div>
+
+                <!-- Countdown Timer Block (If Enabled) -->
+                <div id="timer-wrapper" class="w-full bg-rose-950/20 border border-rose-500/30 rounded-xl p-4 mb-6 flex flex-col items-center">
+                    <span class="text-xs font-mono text-rose-400 font-semibold mb-2 flex items-center gap-2">
+                        <i class="fa-solid fa-hourglass-half animate-spin"></i> TIME REMAINING BEFORE PUBLIC DATA DISCLOSURE
+                    </span>
+                    <div class="flex items-center justify-center gap-3 font-mono text-xl sm:text-3xl font-bold text-rose-400">
+                        <div class="flex flex-col items-center">
+                            <span id="timer-display-h" class="bg-slate-900 border border-rose-900 px-3 py-1.5 rounded-lg shadow">48</span>
+                            <span class="text-[10px] text-slate-500 mt-1 uppercase">Hours</span>
+                        </div>
+                        <span>:</span>
+                        <div class="flex flex-col items-center">
+                            <span id="timer-display-m" class="bg-slate-900 border border-rose-900 px-3 py-1.5 rounded-lg shadow">00</span>
+                            <span class="text-[10px] text-slate-500 mt-1 uppercase">Mins</span>
+                        </div>
+                        <span>:</span>
+                        <div class="flex flex-col items-center">
+                            <span id="timer-display-s" class="bg-slate-900 border border-rose-900 px-3 py-1.5 rounded-lg shadow">00</span>
+                            <span class="text-[10px] text-slate-500 mt-1 uppercase">Secs</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Secondary Metadata -->
+                <div class="w-full flex flex-col sm:flex-row items-center justify-between text-xs font-mono text-slate-400 gap-2 border-t border-slate-800/80 pt-4">
+                    <span id="preview-meta-1" class="truncate max-w-full">TARGET ID: #SEC-90823-X</span>
+                    <span id="preview-meta-2" class="truncate max-w-full text-emerald-400/80">TOR CONTACT: darknet_portal_node.onion</span>
+                </div>
+
+            </div>
+
+            <!-- Demo Disclaimer Watermark -->
+            <div class="absolute bottom-3 left-4 right-4 text-center z-20 pointer-events-none">
+                <span class="text-[11px] font-mono text-slate-600 bg-slate-950/80 px-3 py-1 rounded-full border border-slate-800">
+                    <i class="fa-solid fa-triangle-exclamation mr-1 text-amber-500"></i> FOR SECURITY EDUCATIONAL PRESENTATIONS & RESEARCH SIMULATIONS ONLY
+                </span>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- CODE EXPORT MODAL -->
+    <div id="export-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 z-50 hidden">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl max-w-2xl w-full overflow-hidden shadow-2xl flex flex-col max-h-[85vh]">
+            <div class="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-file-code text-emerald-400"></i>
+                    <h3 class="font-mono font-bold text-sm text-slate-200">Generated Defacement HTML Source</h3>
+                </div>
+                <button onclick="closeExportModal()" class="text-slate-400 hover:text-slate-100 p-1">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+            </div>
+            <div class="p-4 flex-1 overflow-y-auto font-mono text-xs bg-slate-950">
+                <pre id="export-code-box" class="text-emerald-400 whitespace-pre-wrap break-all select-text"></pre>
+            </div>
+            <div class="p-4 border-t border-slate-800 bg-slate-950 flex justify-end space-x-3">
+                <button onclick="closeExportModal()" class="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 font-mono text-xs">Close</button>
+                <button onclick="copyGeneratedCode()" class="px-4 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold font-mono text-xs flex items-center gap-1.5">
+                    <i class="fa-solid fa-copy"></i>
+                    <span id="copy-btn-text">Copy HTML Code</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT SIMULATOR LOGIC -->
+    <script>
+        // Preset Configurations
+        const presets = {
+            hacktivist: {
+                accent: '#00ff66',
+                icon: 'fa-skull',
+                headline: 'HACKED BY ANONYMOUS CREW',
+                actor: 'Ghost_Cyber_Squad_v3',
+                message: 'YOUR SECURITY SYSTEM WAS WEAK. WE HAVE ACCESS TO ALL PRIVATE DATABASES AND CONFIDENTIAL DOCUMENTS. LEAK IMMINENT.',
+                meta1: 'TARGET ID: #SEC-90823-X',
+                meta2: 'TOR CONTACT: darknet_portal_node.onion',
+                timer: true,
+                hours: 48,
+                mins: 0,
+                matrix: true,
+                glitch: true,
+                scanlines: true,
+                bgDark: '#05070f'
+            },
+            ransomware: {
+                accent: '#ff0033',
+                icon: 'fa-lock',
+                headline: 'YOUR FILES ARE ENCRYPTED!',
+                actor: 'RansomCorp_BlackSec',
+                message: 'All your files, databases, and network backups have been strongly encrypted with RSA-4096. Do not try to decrypt manually or data will be permanently destroyed.',
+                meta1: 'PAYMENT DEMAND: 2.5 BTC',
+                meta2: 'SUPPORT: pay-portal-node77.onion',
+                timer: true,
+                hours: 24,
+                mins: 0,
+                matrix: true,
+                glitch: false,
+                scanlines: true,
+                bgDark: '#0a0204'
+            },
+            alert: {
+                accent: '#f59e0b',
+                icon: 'fa-triangle-exclamation',
+                headline: 'CRITICAL SECURITY BREACH DETECTED',
+                actor: 'SOC_Automated_Defense_System',
+                message: 'Access to this host has been restricted by Network Security Operations Center due to suspected credential harvesting and unauthorized payload execution.',
+                meta1: 'INCIDENT CASE: #INC-2026-8890',
+                meta2: 'SECURITY CONTACT: soc@enterprise-security.local',
+                timer: false,
+                hours: 0,
+                mins: 0,
+                matrix: false,
+                glitch: false,
+                scanlines: true,
+                bgDark: '#0b0903'
+            },
+            maintenance: {
+                accent: '#06b6d4',
+                icon: 'fa-screwdriver-wrench',
+                headline: 'UNSCHEDULED SECURITY MAINTENANCE',
+                actor: 'DevOps_Cyber_Defense_Team',
+                message: 'This web service is currently undergoing emergency patching for zero-day vulnerability remediation. Service will resume shortly once verification completes.',
+                meta1: 'STATUS: PATCHING IN PROGRESS',
+                meta2: 'ESTIMATED UPTIME: 02 HOURS',
+                timer: true,
+                hours: 2,
+                mins: 30,
+                matrix: true,
+                glitch: false,
+                scanlines: false,
+                bgDark: '#020b10'
+            }
+        };
+
+        // State variables
+        let soundEnabled = false;
+        let alarmInterval = null;
+        let countdownTimer = null;
+        let remainingSeconds = 48 * 3600;
+
+        // Matrix Canvas setup
+        const canvas = document.getElementById('matrix-canvas');
+        const ctx = canvas.getContext('2d');
+        let matrixInterval;
+        const katakana = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン';
+        const latin = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
+        const alphabet = katakana + latin;
+        const fontSize = 14;
+        let columns = 0;
+        let rainDrops = [];
+
+        function initMatrix() {
+            canvas.width = canvas.parentElement.clientWidth;
+            canvas.height = canvas.parentElement.clientHeight;
+            columns = Math.floor(canvas.width / fontSize);
+            rainDrops = Array(columns).fill(1);
+        }
+
+        function drawMatrix() {
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const accentHex = document.getElementById('input-accent-color').value;
+            ctx.fillStyle = accentHex;
+            ctx.font = fontSize + 'px monospace';
+
+            for (let i = 0; i < rainDrops.length; i++) {
+                const text = alphabet.charAt(Math.floor(Math.random() * alphabet.length));
+                ctx.fillText(text, i * fontSize, rainDrops[i] * fontSize);
+
+                if (rainDrops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                    rainDrops[i] = 0;
+                }
+                rainDrops[i]++;
+            }
+        }
+
+        window.addEventListener('resize', () => {
+            initMatrix();
+        });
+
+        // Load Preset Function
+        function loadPreset(name) {
+            const data = presets[name];
+            if (!data) return;
+
+            document.querySelectorAll('.preset-btn').forEach(btn => btn.classList.remove('bg-slate-800', 'font-bold'));
+            const activeBtn = document.getElementById(`btn-preset-${name}`);
+            if(activeBtn) activeBtn.classList.add('bg-slate-800', 'font-bold');
+
+            // Set inputs
+            document.getElementById('input-accent-color').value = data.accent;
+            document.getElementById('select-emblem-icon').value = data.icon;
+            document.getElementById('input-headline').value = data.headline;
+            document.getElementById('input-actor').value = data.actor;
+            document.getElementById('input-message').value = data.message;
+            document.getElementById('input-meta-1').value = data.meta1;
+            document.getElementById('input-meta-2').value = data.meta2;
+            document.getElementById('chk-show-timer').checked = data.timer;
+            document.getElementById('timer-hours').value = data.hours;
+            document.getElementById('timer-minutes').value = data.mins;
+            document.getElementById('chk-matrix-rain').checked = data.matrix;
+            document.getElementById('chk-glitch-effect').checked = data.glitch;
+            document.getElementById('chk-scanlines').checked = data.scanlines;
+
+            updateCustomTheme();
+            updateContent();
+            toggleMatrixRain();
+            toggleGlitchEffect();
+            toggleScanlines();
+            toggleCountdownTimer();
+            resetTimer();
+        }
+
+        // Dynamic Styling updates
+        function updateCustomTheme() {
+            const color = document.getElementById('input-accent-color').value;
+            document.getElementById('hex-accent-color').innerText = color;
+
+            const headline = document.getElementById('preview-headline');
+            const emblemGlow = document.getElementById('emblem-glow');
+            const emblemBox = document.getElementById('emblem-box');
+            const actorBadge = document.getElementById('preview-actor-badge');
+            const landingCard = document.getElementById('landing-card');
+
+            headline.style.color = color;
+            emblemGlow.style.backgroundColor = color;
+            emblemBox.style.borderColor = color + '66';
+            emblemBox.style.color = color;
+            actorBadge.style.borderColor = color + '44';
+            actorBadge.style.color = color;
+            landingCard.style.borderColor = color + '33';
+        }
+
+        // Live Content Text Sync
+        function updateContent() {
+            const iconClass = document.getElementById('select-emblem-icon').value;
+            const headlineText = document.getElementById('input-headline').value;
+            const actorText = document.getElementById('input-actor').value;
+            const messageText = document.getElementById('input-message').value;
+            const meta1Text = document.getElementById('input-meta-1').value;
+            const meta2Text = document.getElementById('input-meta-2').value;
+
+            document.getElementById('preview-emblem-icon').className = `fa-solid ${iconClass}`;
+            
+            const hlElem = document.getElementById('preview-headline');
+            hlElem.innerText = headlineText;
+            hlElem.setAttribute('data-text', headlineText);
+
+            document.getElementById('preview-actor').innerText = `Actor: ${actorText}`;
+            document.getElementById('preview-message').innerText = messageText;
+            document.getElementById('preview-meta-1').innerText = meta1Text;
+            document.getElementById('preview-meta-2').innerText = meta2Text;
+        }
+
+        // Toggles
+        function toggleMatrixRain() {
+            const enabled = document.getElementById('chk-matrix-rain').checked;
+            canvas.style.display = enabled ? 'block' : 'none';
+        }
+
+        function toggleGlitchEffect() {
+            const enabled = document.getElementById('chk-glitch-effect').checked;
+            const hlElem = document.getElementById('preview-headline');
+            if (enabled) {
+                hlElem.classList.add('glitch-active');
+            } else {
+                hlElem.classList.remove('glitch-active');
+            }
+        }
+
+        function toggleScanlines() {
+            const enabled = document.getElementById('chk-scanlines').checked;
+            document.getElementById('scanline-layer').style.display = enabled ? 'block' : 'none';
+        }
+
+        function toggleCountdownTimer() {
+            const enabled = document.getElementById('chk-show-timer').checked;
+            document.getElementById('timer-wrapper').style.display = enabled ? 'flex' : 'none';
+        }
+
+        // Countdown Timer Clock
+        function resetTimer() {
+            clearInterval(countdownTimer);
+            const hrs = parseInt(document.getElementById('timer-hours').value) || 0;
+            const mins = parseInt(document.getElementById('timer-minutes').value) || 0;
+            remainingSeconds = (hrs * 3600) + (mins * 60);
+
+            updateTimerDisplay();
+            countdownTimer = setInterval(() => {
+                if (remainingSeconds > 0) {
+                    remainingSeconds--;
+                    updateTimerDisplay();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const h = Math.floor(remainingSeconds / 3600);
+            const m = Math.floor((remainingSeconds % 3600) / 60);
+            const s = remainingSeconds % 60;
+
+            document.getElementById('timer-display-h').innerText = String(h).padStart(2, '0');
+            document.getElementById('timer-display-m').innerText = String(m).padStart(2, '0');
+            document.getElementById('timer-display-s').innerText = String(s).padStart(2, '0');
+        }
+
+        // Sound & Alarm System (Tone.js Synthesizer)
+        async function toggleAudio() {
+            if (!soundEnabled) {
+                await Tone.start();
+                soundEnabled = true;
+                document.getElementById('audio-icon').className = "fa-solid fa-volume-high text-emerald-400";
+                document.getElementById('audio-status').innerText = "Active";
+                playBeepSound();
+            } else {
+                soundEnabled = false;
+                document.getElementById('audio-icon').className = "fa-solid fa-volume-xmark text-rose-400";
+                document.getElementById('audio-status').innerText = "Muted";
+                if(alarmInterval) clearInterval(alarmInterval);
+            }
+        }
+
+        function playBeepSound() {
+            if (!soundEnabled) return;
+            const synth = new Tone.Synth().toDestination();
+            synth.triggerAttackRelease("C5", "8n");
+        }
+
+        function toggleAudioPulse() {
+            const enabled = document.getElementById('chk-audio-pulse').checked;
+            const flashLayer = document.getElementById('alarm-flash-layer');
+
+            if (enabled) {
+                if (alarmInterval) clearInterval(alarmInterval);
+                alarmInterval = setInterval(() => {
+                    flashLayer.style.opacity = '1';
+                    if (soundEnabled) {
+                        const synth = new Tone.Synth().toDestination();
+                        synth.triggerAttackRelease("A4", "16n");
+                    }
+                    setTimeout(() => {
+                        flashLayer.style.opacity = '0';
+                    }, 200);
+                }, 1500);
+            } else {
+                if (alarmInterval) clearInterval(alarmInterval);
+                flashLayer.style.opacity = '0';
+            }
+        }
+
+        // Fullscreen Mode
+        function triggerFullscreen() {
+            const elem = document.getElementById('preview-container');
+            if (elem.requestFullscreen) {
+                elem.requestFullscreen();
+            } else if (elem.webkitRequestFullscreen) {
+                elem.webkitRequestFullscreen();
+            }
+        }
+
+        // Export Code Modal Functions
+        function openExportModal() {
+            const accent = document.getElementById('input-accent-color').value;
+            const icon = document.getElementById('select-emblem-icon').value;
+            const headline = document.getElementById('input-headline').value;
+            const actor = document.getElementById('input-actor').value;
+            const message = document.getElementById('input-message').value;
+            const meta1 = document.getElementById('input-meta-1').value;
+            const meta2 = document.getElementById('input-meta-2').value;
+
+            const codeTemplate = `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SECURITY NOTICE - ${headline}</title>
+    <script src="https://cdn.tailwindcss.com"><\/script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body { background-color: #05070f; font-family: monospace; }
+        .glitch { text-shadow: 2px 0 ${accent}; }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-6 text-slate-100">
+    <div class="max-w-2xl w-full bg-slate-950 border border-slate-800 rounded-2xl p-8 text-center shadow-2xl">
+        <div class="w-20 h-20 mx-auto mb-6 rounded-2xl bg-slate-900 border flex items-center justify-center text-4xl" style="border-color:${accent}; color:${accent}">
+            <i class="fa-solid ${icon}"></i>
+        </div>
+        <h1 class="text-3xl font-bold mb-2 glitch" style="color:${accent}">${headline}</h1>
+        <div class="inline-block px-3 py-1 rounded-full bg-slate-900 text-xs text-slate-400 mb-6">
+            Actor: ${actor}
+        </div>
+        <div class="bg-slate-900 border border-slate-800 rounded-xl p-4 text-left text-sm mb-6 text-slate-300">
+            <p>${message}</p>
+        </div>
+        <div class="flex flex-col sm:flex-row justify-between text-xs text-slate-500 gap-2">
+            <span>${meta1}</span>
+            <span>${meta2}</span>
+        </div>
+    </div>
+</body>
+</html>`;
+
+            document.getElementById('export-code-box').innerText = codeTemplate;
+            document.getElementById('export-modal').classList.remove('hidden');
+        }
+
+        function closeExportModal() {
+            document.getElementById('export-modal').classList.add('hidden');
+        }
+
+        function copyGeneratedCode() {
+            const codeText = document.getElementById('export-code-box').innerText;
+            const tempInput = document.createElement('textarea');
+            tempInput.value = codeText;
+            document.body.appendChild(tempInput);
+            tempInput.select();
+            document.execCommand('copy');
+            document.body.removeChild(tempInput);
+
+            const btnText = document.getElementById('copy-btn-text');
+            btnText.innerText = "Copied to Clipboard!";
+            setTimeout(() => {
+                btnText.innerText = "Copy HTML Code";
+            }, 2000);
+        }
+
+        // Initialization
+        window.onload = function() {
+            initMatrix();
+            matrixInterval = setInterval(drawMatrix, 40);
+            resetTimer();
+
+            // Dynamic timestamp
+            const now = new Date();
+            document.getElementById('preview-timestamp').innerText = `TIMESTAMP: ${now.toISOString().substring(0,19).replace('T', ' ')} UTC`;
+        };
+    </script>
+</body>
+</html>
