@@ -60,22 +60,13 @@
     ]
   },
   {
-    "category": "client-projects",
+    "category": "Fun project",
     "listings": [
       {
-        "name": "Example Three",
-        "slug": "example-threes",
-        "url": "https://example.org",
-        "description": "A placeholder listing for list 3.",
-        "rating": null,
-        "featured": false,
-        "favicon": ""
-      },
-      {
-        "name": "Example Four",
-        "slug": "example-fours",
-        "url": "https://example.org",
-        "description": "A placeholder listing for list 3.",
+        "name": "Cyber Alart",
+        "slug": "cyber-alart",
+        "url": "https://stackarif-cyber.vercel.app/",
+        "description": "Cyber Alart deisgn system",
         "rating": null,
         "featured": false,
         "favicon": ""
