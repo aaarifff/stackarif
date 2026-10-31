@@ -6,10 +6,11 @@
   "description": "Build your own directory site",
   "license": "MIT",
   "scripts": {
-    "dev": "astro dev",
+    "dev": "astro dev --port 4322",
     "build": "astro build",
-    "preview": "astro preview",
-    "check": "astro check"
+    "preview": "astro preview --port 4322",
+    "check": "astro check",
+    "start": "astro preview --port 4322"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",

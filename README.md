@@ -1,4 +1,44 @@
-# Turborepo starter
+# StackArif
+
+## Run all ten apps locally
+
+Use Node.js 22.12 or newer and the repository's pinned pnpm version, **9.0.0**.
+Run these commands from the repository root:
+
+```sh
+pnpm --version
+pnpm install --frozen-lockfile
+pnpm start
+```
+
+`pnpm start` and `pnpm dev` run all ten development servers. Run only one
+copy at a time; stop it with Ctrl+C before restarting to release the ports.
+If a port is occupied, stop the existing server using it first.
+
+| App | Local URL |
+| --- | --- |
+| AI English | http://localhost:3000 |
+| Docs | http://localhost:3001 |
+| YouTube View | http://localhost:3002 |
+| Web | http://localhost:3003 |
+| Portfolio (www) | http://localhost:4321 |
+| Links | http://localhost:4322 |
+| Typechamp | http://127.0.0.1:5173 |
+| StateLifting | http://localhost:5174 |
+| Game | http://localhost:5175 |
+| Security Defacement Simulator | http://localhost:5176 |
+
+To run one app, use its folder, for example:
+
+```sh
+pnpm --filter ./apps/www dev
+```
+
+`pnpm start:prod` serves production builds/previews and requires a successful
+`pnpm build` first. Apps that use external services still need their own
+environment variables.
+
+## Original starter documentation
 
 This Turborepo starter is maintained by the Turborepo core team.
 

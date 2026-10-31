@@ -163,7 +163,11 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
-  apps/game: {}
+  apps/game:
+    devDependencies:
+      vite:
+        specifier: ^5.0.0
+        version: 5.4.21(@types/node@22.19.15)(lightningcss@1.33.0)
 
   apps/links:
     dependencies:
