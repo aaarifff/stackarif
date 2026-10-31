@@ -163,6 +163,8 @@ importers:
         specifier: 5.9.2
         version: 5.9.2
 
+  apps/game: {}
+
   apps/links:
     dependencies:
       '@astrojs/sitemap':
